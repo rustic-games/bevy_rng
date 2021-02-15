@@ -3,6 +3,9 @@ name = "bevy_rng"
 version = "0.1.0"
 authors = ["Jean Mertz <git@jeanmertz.com>"]
 edition = "2018"
+repository = "https://github.com/rustic-games/bevy_rng"
+description = "A Bevy game engine random number generator plugin"
+license-file = "LICENSE"
 
 [dependencies]
 bevy = { version = "0.4", default-features = false }
