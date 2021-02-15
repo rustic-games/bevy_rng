@@ -22,13 +22,29 @@ pub use rand::Rng as _;
 /// ordered currently.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct RngPlugin {
-    seed: Option<String>,
+    seed: Option<Seed>,
 }
 
-impl RngPlugin {
-    pub fn seeded(seed: impl ToString) -> Self {
+impl From<String> for RngPlugin {
+    fn from(seed: String) -> Self {
         Self {
-            seed: Some(seed.to_string()),
+            seed: Some(Seed::String(seed)),
+        }
+    }
+}
+
+impl From<&str> for RngPlugin {
+    fn from(seed: &str) -> Self {
+        Self {
+            seed: Some(Seed::String(seed.to_owned())),
+        }
+    }
+}
+
+impl From<u64> for RngPlugin {
+    fn from(seed: u64) -> Self {
+        Self {
+            seed: Some(Seed::Number(seed)),
         }
     }
 }
@@ -36,13 +52,16 @@ impl RngPlugin {
 impl Plugin for RngPlugin {
     fn build(&self, app: &mut AppBuilder) {
         if let Some(seed) = &self.seed {
-            app.add_resource(Seed(seed.clone()));
+            app.add_resource(seed.clone());
         }
     }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
-struct Seed(String);
+enum Seed {
+    Number(u64),
+    String(String),
+}
 
 /// The random number generator.
 ///
@@ -71,7 +90,10 @@ impl DerefMut for Rng {
 impl FromResources for Rng {
     fn from_resources(resources: &Resources) -> Self {
         let inner = match resources.get::<Seed>() {
-            Some(seed) => Seeder::from(seed.0.as_str()).make_rng(),
+            Some(seed) => match seed.deref() {
+                Seed::String(seed) => Seeder::from(seed.as_str()).make_rng(),
+                Seed::Number(num) => XorShiftRng::seed_from_u64(*num),
+            },
             None => XorShiftRng::seed_from_u64(0),
         };
 
