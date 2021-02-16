@@ -9,6 +9,6 @@ license-file = "LICENSE"
 
 [dependencies]
 bevy = { version = "0.4", default-features = false }
-rand = { version = "0.8", default-features = false }
+rand = { version = "0.8", default-features = false, features = ["getrandom"] }
 rand_seeder = "0.2"
-rand_xorshift = "0.3"
+rand_xoshiro = "0.6"

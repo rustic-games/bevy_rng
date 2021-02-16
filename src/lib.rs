@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use rand::SeedableRng;
 use rand_seeder::Seeder;
-use rand_xorshift::XorShiftRng;
+use rand_xoshiro::Xoshiro256StarStar;
 use std::ops::{Deref, DerefMut};
 
 pub use rand::Rng as _;
@@ -49,18 +49,27 @@ impl From<u64> for RngPlugin {
     }
 }
 
-impl Plugin for RngPlugin {
-    fn build(&self, app: &mut AppBuilder) {
-        if let Some(seed) = &self.seed {
-            app.add_resource(seed.clone());
-        }
-    }
-}
-
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 enum Seed {
     Number(u64),
     String(String),
+}
+
+impl Plugin for RngPlugin {
+    fn build(&self, app: &mut AppBuilder) {
+        let rng = match &self.seed {
+            Some(Seed::String(seed)) => Seeder::from(seed.as_str()).make_rng(),
+            Some(Seed::Number(num)) => Xoshiro256StarStar::seed_from_u64(*num),
+            None => Xoshiro256StarStar::from_entropy(),
+        };
+
+        app.add_resource(RootRng { rng });
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct RootRng {
+    rng: Xoshiro256StarStar,
 }
 
 /// The random number generator.
@@ -70,11 +79,11 @@ enum Seed {
 /// See the `rand::Rng` trait for more details on how to generate random data.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Rng {
-    inner: XorShiftRng,
+    inner: Xoshiro256StarStar,
 }
 
 impl Deref for Rng {
-    type Target = XorShiftRng;
+    type Target = Xoshiro256StarStar;
 
     fn deref(&self) -> &Self::Target {
         &self.inner
@@ -89,14 +98,13 @@ impl DerefMut for Rng {
 
 impl FromResources for Rng {
     fn from_resources(resources: &Resources) -> Self {
-        let inner = match resources.get::<Seed>() {
-            Some(seed) => match seed.deref() {
-                Seed::String(seed) => Seeder::from(seed.as_str()).make_rng(),
-                Seed::Number(num) => XorShiftRng::seed_from_u64(*num),
-            },
-            None => XorShiftRng::seed_from_u64(0),
-        };
+        if let Some(mut rng) = resources.get_mut::<RootRng>() {
+            let inner = Xoshiro256StarStar::from_rng(&mut rng.deref_mut().rng)
+                .expect("failed to create rng");
 
-        Self { inner }
+            return Self { inner };
+        }
+
+        panic!("must register `RngPlugin`")
     }
 }
