@@ -4,7 +4,15 @@ use bevy_rng::*;
 use std::time::Duration;
 
 fn main() {
-    // don't provide a seed...
+    // Don't register the plugin (non-deterministic)...
+    App::build()
+        .add_resource(ScheduleRunnerSettings::run_once())
+        .add_plugins(MinimalPlugins)
+        .add_system(random_number_1.system())
+        .add_system(random_number_2.system())
+        .run();
+
+    // ...don't provide a seed (same as above)...
     App::build()
         .add_resource(ScheduleRunnerSettings::run_once())
         .add_plugins(MinimalPlugins)
@@ -13,7 +21,7 @@ fn main() {
         .add_system(random_number_2.system())
         .run();
 
-    // ...seed from u64...
+    // ...seed from u64 (deterministic)...
     App::build()
         .add_resource(ScheduleRunnerSettings::run_once())
         .add_plugins(MinimalPlugins)
@@ -22,7 +30,7 @@ fn main() {
         .add_system(random_number_2.system())
         .run();
 
-    // ...or from a string
+    // ...or from a string (same as above).
     App::build()
         .add_resource(ScheduleRunnerSettings::run_loop(Duration::from_millis(100)))
         .add_plugins(MinimalPlugins)

@@ -98,13 +98,12 @@ impl DerefMut for Rng {
 
 impl FromResources for Rng {
     fn from_resources(resources: &Resources) -> Self {
-        if let Some(mut rng) = resources.get_mut::<RootRng>() {
-            let inner = Xoshiro256StarStar::from_rng(&mut rng.deref_mut().rng)
-                .expect("failed to create rng");
+        let inner = match resources.get_mut::<RootRng>() {
+            Some(mut rng) => Xoshiro256StarStar::from_rng(&mut rng.deref_mut().rng)
+                .expect("failed to create rng"),
+            None => Xoshiro256StarStar::from_entropy(),
+        };
 
-            return Self { inner };
-        }
-
-        panic!("must register `RngPlugin`")
+        Self { inner }
     }
 }
