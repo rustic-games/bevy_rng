@@ -1,8 +1,14 @@
-use bevy::prelude::*;
 use rand::SeedableRng;
 use rand_seeder::Seeder;
 use rand_xoshiro::Xoshiro256StarStar;
 use std::ops::{Deref, DerefMut};
+
+#[cfg(all(feature = "bevy-nightly", not(feature = "bevy-stable")))]
+use bevy_nightly as bevy;
+#[cfg(all(feature = "bevy-stable", not(feature = "bevy-nightly")))]
+use bevy_stable as bevy;
+
+use bevy::prelude::*;
 
 pub use rand::Rng as _;
 
@@ -63,6 +69,9 @@ impl Plugin for RngPlugin {
             None => Xoshiro256StarStar::from_entropy(),
         };
 
+        #[cfg(all(feature = "bevy-nightly", not(feature = "bevy-stable")))]
+        app.insert_resource(RootRng { rng });
+        #[cfg(all(feature = "bevy-stable", not(feature = "bevy-nightly")))]
         app.add_resource(RootRng { rng });
     }
 }
@@ -72,9 +81,9 @@ struct RootRng {
     rng: Xoshiro256StarStar,
 }
 
-/// The random number generator.
+/// The Rng resource.
 ///
-/// This wraps `rand`'s `XorShiftRng` random number generator.
+/// This wraps a random number generator.
 ///
 /// See the `rand::Rng` trait for more details on how to generate random data.
 #[derive(Debug, Clone, PartialEq, Eq)]
