@@ -13,7 +13,7 @@ rand_seeder = "0.2"
 rand_xoshiro = "0.6"
 
 bevy-stable = { package = "bevy", version = "0.4", default-features = false, optional = true }
-bevy-nightly = { package = "bevy", version = "0.4", git = "https://github.com/bevyengine/bevy", default-features = false, optional = true }
+bevy-nightly = { package = "bevy", version = "0.4", git = "https://github.com/bevyengine/bevy", rev = "7be096a254e86bd6388d96ea10b56b9ed6210685", default-features = false, optional = true }
 
 [features]
 default = ["bevy-stable"]
