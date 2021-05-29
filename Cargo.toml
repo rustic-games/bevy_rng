@@ -1,6 +1,6 @@
 [package]
 name = "bevy_rng"
-version = "0.3.0"
+version = "0.3.1"
 authors = ["Jean Mertz <git@jeanmertz.com>"]
 edition = "2018"
 repository = "https://github.com/rustic-games/bevy_rng"
