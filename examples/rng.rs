@@ -6,7 +6,7 @@ use std::time::Duration;
 fn main() {
     // Don't register the plugin (non-deterministic)...
     App::build()
-        .add_resource(ScheduleRunnerSettings::run_once())
+        .insert_resource(ScheduleRunnerSettings::run_once())
         .add_plugins(MinimalPlugins)
         .add_system(random_number_1.system())
         .add_system(random_number_2.system())
@@ -14,7 +14,7 @@ fn main() {
 
     // ...don't provide a seed (same as above)...
     App::build()
-        .add_resource(ScheduleRunnerSettings::run_once())
+        .insert_resource(ScheduleRunnerSettings::run_once())
         .add_plugins(MinimalPlugins)
         .add_plugin(RngPlugin::default())
         .add_system(random_number_1.system())
@@ -23,7 +23,7 @@ fn main() {
 
     // ...seed from u64 (deterministic)...
     App::build()
-        .add_resource(ScheduleRunnerSettings::run_once())
+        .insert_resource(ScheduleRunnerSettings::run_once())
         .add_plugins(MinimalPlugins)
         .add_plugin(RngPlugin::from(42))
         .add_system(random_number_1.system())
@@ -32,7 +32,7 @@ fn main() {
 
     // ...or from a string (same as above).
     App::build()
-        .add_resource(ScheduleRunnerSettings::run_loop(Duration::from_millis(100)))
+        .insert_resource(ScheduleRunnerSettings::run_loop(Duration::from_millis(100)))
         .add_plugins(MinimalPlugins)
         .add_plugin(RngPlugin::from("your seed here"))
         .add_system(random_number_1.system())
