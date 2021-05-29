@@ -10,6 +10,7 @@ use bevy_stable as bevy;
 
 use bevy::prelude::*;
 
+
 pub use rand::Rng as _;
 
 /// `RngPlugin` allows you to inject a (optionally seeded) random number
@@ -69,10 +70,7 @@ impl Plugin for RngPlugin {
             None => Xoshiro256StarStar::from_entropy(),
         };
 
-        #[cfg(all(feature = "bevy-nightly", not(feature = "bevy-stable")))]
         app.insert_resource(RootRng { rng });
-        #[cfg(all(feature = "bevy-stable", not(feature = "bevy-nightly")))]
-        app.add_resource(RootRng { rng });
     }
 }
 
@@ -105,10 +103,10 @@ impl DerefMut for Rng {
     }
 }
 
-impl FromResources for Rng {
-    fn from_resources(resources: &Resources) -> Self {
-        let inner = match resources.get_mut::<RootRng>() {
-            Some(mut rng) => Xoshiro256StarStar::from_rng(&mut rng.deref_mut().rng)
+impl FromWorld for Rng {
+    fn from_world(world: &mut World) -> Self {
+        let inner = match world.get_resource::<RootRng>() {
+            Some(rng) => Xoshiro256StarStar::from_rng(rng.rng.clone())
                 .expect("failed to create rng"),
             None => Xoshiro256StarStar::from_entropy(),
         };

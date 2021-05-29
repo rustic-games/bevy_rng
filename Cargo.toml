@@ -1,6 +1,6 @@
 [package]
 name = "bevy_rng"
-version = "0.3.0"
+version = "0.3.1"
 authors = ["Jean Mertz <git@jeanmertz.com>"]
 edition = "2018"
 repository = "https://github.com/rustic-games/bevy_rng"
@@ -12,8 +12,8 @@ rand = { version = "0.8", default-features = false, features = ["getrandom"] }
 rand_seeder = "0.2"
 rand_xoshiro = "0.6"
 
-bevy-stable = { package = "bevy", version = "0.4", default-features = false, optional = true }
-bevy-nightly = { package = "bevy", version = "0.4", git = "https://github.com/bevyengine/bevy", rev = "c2a427f1a38db6b1d9798e631a7da7a8507fe18c", default-features = false, optional = true }
+bevy-stable = { package = "bevy", version = "0.5", default-features = false, optional = true }
+bevy-nightly = { package = "bevy", version = "0.5", git = "https://github.com/bevyengine/bevy", rev = "4f341430469acef478a709aff00bde375743f946", default-features = false, optional = true }
 
 [features]
 default = ["bevy-stable"]
