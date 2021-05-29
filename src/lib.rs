@@ -3,7 +3,13 @@ use rand_seeder::Seeder;
 use rand_xoshiro::Xoshiro256StarStar;
 use std::ops::{Deref, DerefMut};
 
+#[cfg(all(feature = "bevy-nightly", not(feature = "bevy-stable")))]
+use bevy_nightly as bevy;
+#[cfg(all(feature = "bevy-stable", not(feature = "bevy-nightly")))]
+use bevy_stable as bevy;
+
 use bevy::prelude::*;
+
 
 pub use rand::Rng as _;
 

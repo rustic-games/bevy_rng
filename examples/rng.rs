@@ -1,3 +1,8 @@
+#[cfg(all(feature = "bevy-nightly", not(feature = "bevy-stable")))]
+use bevy_nightly as bevy;
+#[cfg(all(feature = "bevy-stable", not(feature = "bevy-nightly")))]
+use bevy_stable as bevy;
+
 use bevy::app::ScheduleRunnerSettings;
 use bevy::prelude::*;
 use bevy_rng::*;
