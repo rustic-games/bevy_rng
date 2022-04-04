@@ -62,7 +62,7 @@ enum Seed {
 }
 
 impl Plugin for RngPlugin {
-    fn build(&self, app: &mut AppBuilder) {
+    fn build(&self, app: &mut App) {
         let rng = match &self.seed {
             Some(Seed::String(seed)) => Seeder::from(seed.as_str()).make_rng(),
             Some(Seed::Number(num)) => Xoshiro256StarStar::seed_from_u64(*num),
@@ -72,7 +72,7 @@ impl Plugin for RngPlugin {
         #[cfg(all(feature = "bevy-nightly", not(feature = "bevy-stable")))]
         app.insert_resource(RootRng { rng });
         #[cfg(all(feature = "bevy-stable", not(feature = "bevy-nightly")))]
-        app.add_resource(RootRng { rng });
+        app.insert_resource(RootRng { rng });
     }
 }
 
@@ -105,9 +105,9 @@ impl DerefMut for Rng {
     }
 }
 
-impl FromResources for Rng {
-    fn from_resources(resources: &Resources) -> Self {
-        let inner = match resources.get_mut::<RootRng>() {
+impl FromWorld for Rng {
+    fn from_world(world: &mut World) -> Self {
+        let inner = match world.get_resource_mut::<RootRng>() {
             Some(mut rng) => Xoshiro256StarStar::from_rng(&mut rng.deref_mut().rng)
                 .expect("failed to create rng"),
             None => Xoshiro256StarStar::from_entropy(),
