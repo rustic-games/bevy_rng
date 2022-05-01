@@ -1,3 +1,8 @@
+#[cfg(all(feature = "bevy-nightly", not(feature = "bevy-stable")))]
+use bevy_nightly as bevy;
+#[cfg(all(feature = "bevy-stable", not(feature = "bevy-nightly")))]
+use bevy_stable as bevy;
+
 use bevy::app::ScheduleRunnerSettings;
 use bevy::prelude::*;
 use bevy_rng::*;
@@ -5,38 +10,38 @@ use std::time::Duration;
 
 fn main() {
     // Don't register the plugin (non-deterministic)...
-    App::build()
-        .add_resource(ScheduleRunnerSettings::run_once())
+    App::new()
+        .insert_resource(ScheduleRunnerSettings::run_once())
         .add_plugins(MinimalPlugins)
-        .add_system(random_number_1.system())
-        .add_system(random_number_2.system())
+        .add_system(random_number_1)
+        .add_system(random_number_2)
         .run();
 
     // ...don't provide a seed (same as above)...
-    App::build()
-        .add_resource(ScheduleRunnerSettings::run_once())
+    App::new()
+        .insert_resource(ScheduleRunnerSettings::run_once())
         .add_plugins(MinimalPlugins)
         .add_plugin(RngPlugin::default())
-        .add_system(random_number_1.system())
-        .add_system(random_number_2.system())
+        .add_system(random_number_1)
+        .add_system(random_number_2)
         .run();
 
     // ...seed from u64 (deterministic)...
-    App::build()
-        .add_resource(ScheduleRunnerSettings::run_once())
+    App::new()
+        .insert_resource(ScheduleRunnerSettings::run_once())
         .add_plugins(MinimalPlugins)
         .add_plugin(RngPlugin::from(42))
-        .add_system(random_number_1.system())
-        .add_system(random_number_2.system())
+        .add_system(random_number_1)
+        .add_system(random_number_2)
         .run();
 
     // ...or from a string (same as above).
-    App::build()
-        .add_resource(ScheduleRunnerSettings::run_loop(Duration::from_millis(100)))
+    App::new()
+        .insert_resource(ScheduleRunnerSettings::run_loop(Duration::from_millis(100)))
         .add_plugins(MinimalPlugins)
         .add_plugin(RngPlugin::from("your seed here"))
-        .add_system(random_number_1.system())
-        .add_system(random_number_2.system())
+        .add_system(random_number_1)
+        .add_system(random_number_2)
         .run();
 }
 
